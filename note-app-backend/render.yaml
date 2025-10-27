@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: ai-notes-api
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    port: 5000
+    plan: starter
+    autoDeploy: false
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        fromEnv: true
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_EXPIRE
+        value: 15m
+      - key: JWT_REFRESH_EXPIRE
+        value: 7d
+      - key: OPENAI_API_KEY
+        fromEnv: true
+      - key: AI_MODEL
+        value: gpt-3.5-turbo
+      - key: MAX_TOKENS
+        value: 150
+      - key: BCRYPT_SALT_ROUNDS
+        value: 12
+      - key: CORS_ORIGIN
+        value: https://your-frontend-domain.com
