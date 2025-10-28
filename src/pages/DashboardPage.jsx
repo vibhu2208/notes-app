@@ -20,12 +20,23 @@ const queryClient = new QueryClient({
 
 function DashboardPage() {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      {/* Background decoration */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary-200/20 to-purple-200/20 dark:from-primary-800/10 dark:to-purple-800/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-pink-200/20 to-primary-200/20 dark:from-pink-800/10 dark:to-primary-800/10 rounded-full blur-3xl"></div>
+      </div>
+      
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Suspense 
           fallback={
-            <div className="flex justify-center py-12">
-              <LoadingSpinner size="lg" />
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="mb-4">
+                <LoadingSpinner size="lg" />
+              </div>
+              <p className="text-gray-600 dark:text-gray-400 text-sm animate-pulse">
+                Loading your notes...
+              </p>
             </div>
           }
         >

@@ -16,6 +16,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
+import AccountPage from './pages/AccountPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
@@ -34,6 +35,12 @@ function App() {
               <Route path="dashboard" element={
                 <PrivateRoute>
                   <DashboardPage />
+                </PrivateRoute>
+              } />
+              
+              <Route path="account" element={
+                <PrivateRoute>
+                  <AccountPage />
                 </PrivateRoute>
               } />
               

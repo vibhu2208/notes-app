@@ -186,8 +186,8 @@ function CreateNoteModal({ isOpen, onClose, onSave, editNote = null }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl max-h-[95vh] sm:max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <div className="flex items-center gap-3">
@@ -342,9 +342,10 @@ function CreateNoteModal({ isOpen, onClose, onSave, editNote = null }) {
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="flex items-center justify-between p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex-shrink-0">
-            <div className="flex items-center gap-4">
+          {/* Footer - Mobile responsive with sticky positioning */}
+          <div className="sticky bottom-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 sm:p-6 border-t border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm flex-shrink-0">
+            {/* Status indicators - Hidden on mobile to save space */}
+            <div className="hidden sm:flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                 <Sparkles className="w-4 h-4" />
                 <span>AI summarization available after saving</span>
@@ -359,41 +360,45 @@ function CreateNoteModal({ isOpen, onClose, onSave, editNote = null }) {
               )}
             </div>
             
-            <div className="flex items-center gap-3">
-              <div className="text-xs text-gray-500 dark:text-gray-400">
+            {/* Action buttons */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+              {/* Keyboard shortcuts - Hidden on mobile */}
+              <div className="hidden sm:block text-xs text-gray-500 dark:text-gray-400">
                 Ctrl+Enter to save • Esc to cancel
               </div>
               
-              <button
-                type="button"
-                onClick={handleClose}
-                disabled={isLoading}
-                className="btn-secondary"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isLoading || !formData.title.trim() || !formData.content.trim()}
-                className={`btn-primary flex items-center gap-2 min-w-[160px] justify-center px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all ${
-                  formData.title.trim() && formData.content.trim() && !isLoading 
-                    ? 'ring-2 ring-primary-300 ring-offset-2 dark:ring-primary-700 dark:ring-offset-gray-900' 
-                    : ''
-                }`}
-                title={`Press Ctrl+Enter to ${editNote ? 'update' : 'create'} note`}
-              >
-                {isLoading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    {editNote ? 'Updating...' : 'Creating...'}
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-4 h-4" />
-                    {editNote ? 'Update Note' : 'Create Note'}
-                  </>
-                )}
-              </button>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  disabled={isLoading}
+                  className="btn-secondary flex-1 sm:flex-none px-4 py-3"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isLoading || !formData.title.trim() || !formData.content.trim()}
+                  className={`btn-primary flex items-center justify-center gap-2 flex-1 sm:flex-none sm:min-w-[160px] px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all ${
+                    formData.title.trim() && formData.content.trim() && !isLoading 
+                      ? 'ring-2 ring-primary-300 ring-offset-2 dark:ring-primary-700 dark:ring-offset-gray-900' 
+                      : ''
+                  }`}
+                  title={`Press Ctrl+Enter to ${editNote ? 'update' : 'create'} note`}
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span className="sm:inline">{editNote ? 'Updating...' : 'Creating...'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4" />
+                      <span className="sm:inline">{editNote ? 'Update Note' : 'Create Note'}</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </form>

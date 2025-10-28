@@ -3,9 +3,10 @@
  * User registration form with validation
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
@@ -20,6 +21,7 @@ function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -83,9 +85,40 @@ function RegisterPage() {
       });
       navigate('/dashboard');
     } catch (err) {
-      setErrors({ general: err.message || 'Registration failed. Please try again.' });
+      const errorMessage = err.message || 'Registration failed. Please try again.';
+      
+      // Check if error is about email already existing
+      if (errorMessage.toLowerCase().includes('email') && 
+          (errorMessage.toLowerCase().includes('already') || 
+           errorMessage.toLowerCase().includes('exists') || 
+           errorMessage.toLowerCase().includes('registered'))) {
+        
+        setIsRedirecting(true);
+        toast.error('Email already registered. Redirecting to login...', {
+          duration: 2000,
+          style: {
+            background: '#FEF2F2',
+            color: '#DC2626',
+            border: '1px solid #FECACA',
+          },
+        });
+        
+        // Redirect to login after 2 seconds
+        setTimeout(() => {
+          navigate('/login', { 
+            state: { 
+              email: formData.email,
+              message: 'Please sign in with your existing account'
+            }
+          });
+        }, 2000);
+      } else {
+        setErrors({ general: errorMessage });
+      }
     } finally {
-      setIsLoading(false);
+      if (!isRedirecting) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -235,10 +268,15 @@ function RegisterPage() {
           <div>
             <button
               type="submit"
-              disabled={isLoading}
-              className="w-full btn-primary py-3 text-base font-medium disabled:opacity-50"
+              disabled={isLoading || isRedirecting}
+              className="w-full btn-primary py-3 text-base font-medium disabled:opacity-50 transition-all duration-200"
             >
-              {isLoading ? (
+              {isRedirecting ? (
+                <div className="flex items-center justify-center">
+                  <LoadingSpinner size="sm" />
+                  <span className="ml-2">Redirecting to login...</span>
+                </div>
+              ) : isLoading ? (
                 <div className="flex items-center justify-center">
                   <LoadingSpinner size="sm" />
                   <span className="ml-2">Creating account...</span>

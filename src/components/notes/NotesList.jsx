@@ -24,6 +24,7 @@ import toast from 'react-hot-toast';
 import { noteService } from '../../services/noteService';
 import NoteCard from './NoteCard';
 import CreateNoteModal from './CreateNoteModal';
+import NoteModal from './NoteModal';
 import NotesStats from './NotesStats';
 import AIActions from './AIActions';
 import LoadingSpinner from '../common/LoadingSpinner';
@@ -50,6 +51,8 @@ function NotesList() {
   const [selectedNotes, setSelectedNotes] = useState(new Set());
   const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
+  const [viewingNote, setViewingNote] = useState(null);
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -136,6 +139,19 @@ function NotesList() {
   const handleEditNote = (note) => {
     setEditingNote(note);
     setIsCreateModalOpen(true);
+    setIsNoteModalOpen(false); // Close note modal if open
+  };
+
+  const handleViewNote = (note) => {
+    console.log('handleViewNote called with:', note);
+    setViewingNote(note);
+    setIsNoteModalOpen(true);
+    console.log('Modal should be open now');
+  };
+
+  const handleCloseNoteModal = () => {
+    setIsNoteModalOpen(false);
+    setViewingNote(null);
   };
 
   const handleSaveNote = (savedNote) => {
@@ -215,23 +231,25 @@ function NotesList() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-8">
+        <div className="space-y-2">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 dark:from-white dark:via-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
             My Notes
           </h1>
-          <p className="mt-1 text-gray-600 dark:text-gray-400">
+          <p className="text-lg text-gray-600 dark:text-gray-400">
             Organize your thoughts with AI-powered insights
           </p>
         </div>
         
-        <button 
-          onClick={handleCreateNote}
-          className="btn-primary flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          New Note
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={handleCreateNote}
+            className="btn-primary flex items-center gap-2 px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+          >
+            <Plus className="w-5 h-5" />
+            New Note
+          </button>
+        </div>
       </div>
 
       {/* Statistics Dashboard */}
@@ -241,48 +259,50 @@ function NotesList() {
       <div className="space-y-4">
         {/* Search Bar */}
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <Search className="h-5 w-5 text-gray-400" />
           </div>
           <input
             type="text"
-            placeholder="Search notes..."
+            placeholder="Search your notes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="input pl-10 w-full"
+            className="input pl-12 pr-12 w-full h-12 text-base bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md focus:shadow-lg transition-all duration-200"
           />
           {isSearching && (
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+            <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
               <LoadingSpinner size="sm" />
             </div>
           )}
         </div>
 
         {/* Filter Controls */}
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3 p-4 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl border border-gray-200/50 dark:border-gray-700/50">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`btn-ghost flex items-center gap-2 ${showFilters ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300' : ''}`}
+            className={`btn-ghost flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 ${showFilters ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300 shadow-sm' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}
           >
             <Filter className="w-4 h-4" />
             Filters
           </button>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowPinnedOnly(!showPinnedOnly)}
-              className={`btn-ghost flex items-center gap-2 ${showPinnedOnly ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300' : ''}`}
-            >
-              <Pin className="w-4 h-4" />
-              Pinned Only
-            </button>
-          </div>
+          <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+
+          <button
+            onClick={() => setShowPinnedOnly(!showPinnedOnly)}
+            className={`btn-ghost flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 ${showPinnedOnly ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300 shadow-sm' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+          >
+            <Pin className="w-4 h-4" />
+            Pinned Only
+          </button>
+
+          <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
 
           <div className="flex items-center gap-2">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="input text-sm"
+              className="input text-sm px-3 py-2 rounded-lg bg-white/80 dark:bg-gray-700/80 border-gray-200 dark:border-gray-600"
             >
               {SORT_OPTIONS.map(option => (
                 <option key={option.value} value={option.value}>
@@ -293,19 +313,21 @@ function NotesList() {
             
             <button
               onClick={handleSortToggle}
-              className="btn-ghost p-2"
+              className="btn-ghost p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
               title={`Sort ${sortOrder === 'asc' ? 'ascending' : 'descending'}`}
             >
               {sortOrder === 'asc' ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />}
             </button>
           </div>
 
-          <div className="flex border border-gray-200 dark:border-gray-700 rounded-lg">
+          <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+
+          <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-2 ${
+              className={`p-2 rounded-md transition-all duration-200 ${
                 viewMode === 'grid'
-                  ? 'bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-400'
+                  ? 'bg-white dark:bg-gray-600 text-primary-600 dark:text-primary-400 shadow-sm'
                   : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
               }`}
             >
@@ -313,9 +335,9 @@ function NotesList() {
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-2 ${
+              className={`p-2 rounded-md transition-all duration-200 ${
                 viewMode === 'list'
-                  ? 'bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-400'
+                  ? 'bg-white dark:bg-gray-600 text-primary-600 dark:text-primary-400 shadow-sm'
                   : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
               }`}
             >
@@ -428,25 +450,17 @@ function NotesList() {
             : 'space-y-4'
         }>
           {displayNotes.map((note) => (
-            <div key={note._id} className="relative">
-              {/* Selection checkbox for bulk operations */}
-              <div className="absolute top-2 left-2 z-10">
-                <input
-                  type="checkbox"
-                  checked={selectedNotes.has(note._id)}
-                  onChange={() => handleSelectNote(note._id)}
-                  className="w-4 h-4 text-primary-600 bg-white border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-              </div>
-              
-              <NoteCard
-                note={note}
-                onUpdate={handleUpdateNote}
-                onDelete={handleDeleteNote}
-                onEdit={handleEditNote}
-                viewMode={viewMode}
-              />
-            </div>
+            <NoteCard
+              key={note._id}
+              note={note}
+              onUpdate={handleUpdateNote}
+              onDelete={handleDeleteNote}
+              onEdit={handleEditNote}
+              onView={handleViewNote}
+              viewMode={viewMode}
+              selectedNotes={selectedNotes}
+              onSelectNote={handleSelectNote}
+            />
           ))}
         </div>
       )}
@@ -485,6 +499,15 @@ function NotesList() {
         }}
         onSave={handleSaveNote}
         editNote={editingNote}
+      />
+
+      {/* Note View Modal */}
+      <NoteModal
+        note={viewingNote}
+        isOpen={isNoteModalOpen}
+        onClose={handleCloseNoteModal}
+        onUpdate={handleUpdateNote}
+        onEdit={handleEditNote}
       />
     </div>
   );
