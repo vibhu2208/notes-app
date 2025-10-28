@@ -88,9 +88,11 @@ function NoteCard({ note, onUpdate, onDelete, onEdit, viewMode = 'grid' }) {
 
   if (viewMode === 'list') {
     return (
-      <div className={`card p-4 hover:shadow-md transition-all duration-200 ${
-        note.isPinned ? 'ring-2 ring-primary-200 dark:ring-primary-800' : ''
-      }`}>
+      <div className={`card p-4 sm:p-5 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-out border-l-4 ${
+        note.isPinned 
+          ? 'ring-2 ring-primary-200 dark:ring-primary-800 border-l-primary-500 bg-gradient-to-r from-primary-50/50 to-transparent dark:from-primary-900/20' 
+          : 'border-l-transparent hover:border-l-primary-300 dark:hover:border-l-primary-600'
+      } group relative overflow-hidden`}>
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
@@ -154,11 +156,11 @@ function NoteCard({ note, onUpdate, onDelete, onEdit, viewMode = 'grid' }) {
             </div>
           </div>
 
-          <div className="flex items-center gap-1 ml-4">
+          <div className="flex items-center gap-1 ml-2 sm:ml-4">
             <button
               onClick={handlePin}
               disabled={isLoading}
-              className="p-2 text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-2 text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-all duration-200 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:scale-110 transform"
               title={note.isPinned ? 'Unpin note' : 'Pin note'}
             >
               {note.isPinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
@@ -168,7 +170,7 @@ function NoteCard({ note, onUpdate, onDelete, onEdit, viewMode = 'grid' }) {
               <button
                 onClick={handleSummarize}
                 disabled={isLoading}
-                className="p-2 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="p-2 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-all duration-200 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:scale-110 transform"
                 title="Generate AI summary"
               >
                 <Sparkles className="w-4 h-4" />
@@ -177,7 +179,7 @@ function NoteCard({ note, onUpdate, onDelete, onEdit, viewMode = 'grid' }) {
 
             <button
               onClick={() => onEdit(note)}
-              className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:scale-110 transform"
               title="Edit note"
             >
               <Edit3 className="w-4 h-4" />
@@ -185,7 +187,7 @@ function NoteCard({ note, onUpdate, onDelete, onEdit, viewMode = 'grid' }) {
 
             <button
               onClick={handleCopy}
-              className="p-2 text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-2 text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-all duration-200 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 hover:scale-110 transform"
               title="Copy content"
             >
               <Copy className="w-4 h-4" />
@@ -193,7 +195,7 @@ function NoteCard({ note, onUpdate, onDelete, onEdit, viewMode = 'grid' }) {
 
             <button
               onClick={handleDelete}
-              className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-all duration-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 hover:scale-110 transform"
               title="Delete note"
             >
               <Trash2 className="w-4 h-4" />
@@ -207,8 +209,10 @@ function NoteCard({ note, onUpdate, onDelete, onEdit, viewMode = 'grid' }) {
   // Grid view
   return (
     <div 
-      className={`card p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group ${
-        note.isPinned ? 'ring-2 ring-primary-200 dark:ring-primary-800' : ''
+      className={`card p-4 sm:p-6 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-out cursor-pointer group relative overflow-hidden ${
+        note.isPinned 
+          ? 'ring-2 ring-primary-300 dark:ring-primary-700 bg-gradient-to-br from-primary-50/80 to-white dark:from-primary-900/30 dark:to-gray-800' 
+          : 'hover:ring-2 hover:ring-primary-200 dark:hover:ring-primary-800'
       }`}
       onClick={() => setIsExpanded(!isExpanded)}
     >
@@ -234,7 +238,7 @@ function NoteCard({ note, onUpdate, onDelete, onEdit, viewMode = 'grid' }) {
           </button>
           
           {showActions && (
-            <div className="absolute right-0 top-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 py-1 min-w-[160px]">
+            <div className="absolute right-0 top-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl backdrop-blur-sm z-20 py-2 min-w-[160px] animate-in slide-in-from-top-2 duration-200">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -369,12 +373,17 @@ function NoteCard({ note, onUpdate, onDelete, onEdit, viewMode = 'grid' }) {
       </div>
 
       {isLoading && (
-        <div className="absolute inset-0 bg-white/80 dark:bg-gray-800/80 flex items-center justify-center rounded-lg">
+        <div className="absolute inset-0 bg-white/80 dark:bg-gray-800/80 flex items-center justify-center rounded-lg backdrop-blur-sm">
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
             <div className="w-4 h-4 border-2 border-primary-600 border-t-transparent rounded-full animate-spin" />
-            Processing...
+            <span className="animate-pulse">Processing...</span>
           </div>
         </div>
+      )}
+
+      {/* Subtle shimmer effect for pinned notes */}
+      {note.isPinned && (
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary-400/30 to-transparent animate-pulse" />
       )}
     </div>
   );
